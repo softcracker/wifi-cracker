@@ -1,6 +1,7 @@
 const ifconfig = require('wireless-tools/ifconfig');
 const fs = require('fs');
 const path = require('path');
+const airodump = require('./airodump-ng')
 
 const saveNetworks = networks => {
     const myData = JSON.stringify(networks);
@@ -49,9 +50,19 @@ new Promise((resolve, reject) => {
             process.exit()
         }
     })
-}).then(() => {
-    prompt('\r\nChoose the number of your network:\r\n', input => {
+})
+prom.then(() => {
+    prompt('\r\nChoose the number of your wifi modem:\r\n', input => {
+        const res = input.replace('.', '')
+        const networks = readFile()
+        const selected = JSON.parse(networks.toString())[res - 1].interface.replace(':', '')
+        console.log('\r\nYou have choosen: ' + selected)
+    })
+})
+prom.then(() => {
+    prompt('\r\nChoose the number of your network interface:\r\n', input => {
         const res = input.replace('.', '')
         scanNetwork(res)
+        airodump.getEssids()
     })
 })
