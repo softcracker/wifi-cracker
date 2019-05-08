@@ -37,5 +37,7 @@ const getEssids = () => {
 
 const getSelectedNetwork = bssid => JSON.parse(readJsonFile()).filter(item => item.ESSID === bssid)
 
-//console.log(getEssids())
-module.exports
+module.exports = {
+    getEssids,
+    getSelectedNetwork
+} 

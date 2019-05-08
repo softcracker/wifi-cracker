@@ -39,9 +39,9 @@ const scanNetwork = networkNumber => {
 }
 
 new Promise((resolve, reject) => {
-    prompt('Start scan (y: yes, n: no)? ', input => {
+    prompt('Start network attack? (y: yes, n: no)? ', input => {
         if (input === 'y') {
-            console.log('\r\nAvailable networks:\r\n')
+            console.log('\r\nAvailable network interfaces:\r\n')
             ifconfig.status((err, status) => {
                 saveNetworks(status)
                 resolve();
@@ -50,19 +50,23 @@ new Promise((resolve, reject) => {
             process.exit()
         }
     })
-})
-prom.then(() => {
-    prompt('\r\nChoose the number of your wifi modem:\r\n', input => {
-        const res = input.replace('.', '')
-        const networks = readFile()
-        const selected = JSON.parse(networks.toString())[res - 1].interface.replace(':', '')
-        console.log('\r\nYou have choosen: ' + selected)
+}).then(() => {
+    return new Promise((resolve) => {
+        prompt('\r\nChoose the number of your wifi modem interface:\r\n', input => {
+            const res = input.replace('.', '')
+            const networks = readFile()
+            const selected = JSON.parse(networks.toString())[res - 1].interface.replace(':', '')
+            console.log('\r\nYou have choosen: ' + selected)
+            resolve()
+        })
     })
-})
-prom.then(() => {
-    prompt('\r\nChoose the number of your network interface:\r\n', input => {
+}).then(() => {
+    console.log('\r\nAvailable networks for the attack:\r\n')
+    airodump.getEssids().map((item, index) => console.log(index + 1 + '. ' + item))
+
+    prompt('\r\nChoose the number of your target network:\r\n', input => {
         const res = input.replace('.', '')
-        scanNetwork(res)
-        airodump.getEssids()
+        const network = airodump.getSelectedNetwork(airodump.getEssids()[res - 1])
+        console.log(network)
     })
 })
