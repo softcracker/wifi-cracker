@@ -1,13 +1,21 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
 
-const readTxtFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.txt'), { encoding: 'utf8' });
-const readJsonFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.json'), { encoding: 'utf8' });
+const readTxtFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.txt'), { encoding: 'utf8' })
+
+const readJsonFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.json'), { encoding: 'utf8' })
+
+const saveAirodumpToFile = data => {
+    fs.writeFile("./tmp/wpastream.txt", data, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+    })
+}
 
 const convertWpastream = () => {
     const json = JSON.stringify(readTxtFile())
     const cleanData = json.substring(0, json.indexOf('Station MAC')).split("\\n")
-
     const dataArray = cleanData.map(item => item.split(','))
     const description = ["BSSID", "Last", "First", "channel", "speed", "privacy", "cipher", "auth", "power", "beacons", "iv", "lan_ip", "id_length", "ESSID", "key"]
 
@@ -25,7 +33,7 @@ const convertWpastream = () => {
         if (err) {
             return console.log(err);
         }
-    });
+    })
 }
 
 const getEssids = () => {
@@ -40,4 +48,4 @@ const getSelectedNetwork = bssid => JSON.parse(readJsonFile()).filter(item => it
 module.exports = {
     getEssids,
     getSelectedNetwork
-} 
+}
