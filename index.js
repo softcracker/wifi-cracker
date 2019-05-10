@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const airodump = require('./airodump-ng')
 const exampleCommand = require('./exampleCommand')
+const childProcess = require('./childProcess')
 
 const saveNetworks = networks => {
     const myData = JSON.stringify(networks)
@@ -52,14 +53,15 @@ new Promise((resolve, reject) => {
             const res = input.replace('.', '')
             const networks = readFile()
             const selected = JSON.parse(networks.toString())[res - 1].interface.replace(':', '')
-            console.log('\r\nYou have choosen: ' + selected)
-            exampleCommand.status((err, status) => {
-                console.log(status)
-            }, 'airodump-ng ' + selected + ' -w tmp/test')
-                resolve(selected)
-            exampleCommand.stdin.pause();
+            console.log('\r\nYou have choosen: ' + selected + '\r\n')
+            resolve(selected)
         })
     })
+})
+// execute childProcess
+.then((selected) => {
+    //childProcess.executeCommand('airodump-ng', [selected, '-w', 'tmp/test'])
+    childProcess.executeCommand('git', ['status'])
 })
 
 /*
@@ -73,8 +75,8 @@ new Promise((resolve, reject) => {
         prompt('\r\nChoose the number of your target network:\r\n', input => {
             const res = input.replace('.', '')
             const network = airodump.getSelectedNetwork(airodump.getEssids()[res - 1])
-            const command = 'airodump-ng ' + selected + ' -c ' + network[0].channel + ' --bssid ' + network[0].BSSID + ' -w tmp/wpastream'
-            //const command = 'git status'
+            //const command = 'airodump-ng ' + selected + ' -c ' + network[0].channel + ' --bssid ' + network[0].BSSID + ' -w tmp/wpastream'
+            const command = 'git status'
             console.log('\r\nExecute command: ' + command + '\r\n')
             resolve(command)
         })
